@@ -1,0 +1,92 @@
+I know there already exist Numeric libs for Ruby, but I have no
+respect for them because I haven't used them. Nothing makes you
+appreciate a library like trying to write your own version.
+
+So.
+
+I guess the main difference here is that my libs will be native Ruby.
+This means they will be slow, but also that they will translate
+seamlessly from FixNum to BigNum, etc., where Ruby libs like NArray
+are bound to C data type sizes.
+
+So, stuff I want to be able to do:
+
+scaled_vector = vector * scalar
+scaled_vector = scalar * vector
+scaled_vector = vector / scalar
+
+dot = vector * vector
+dot = vector.dot vector
+cross = vector.cross vector[, vector, vector...]
+
+vector = vector - vector
+vector = vector + vector
+
+# identity for axis n, e.g. (1,3) => [0,1,0]
+Vector.axis(n,m) 
+Vector3D.X => [1,0,0]
+Vector4D.Y => [0,1,0,0]
+
+# TODO: What about 3D as 4D with homogenous w?
+
+vector = vector * matrix
+vector = matrix * vector
+
+matrix = matrix * scalar
+matrix = scalar * matrix
+matrix = matrix / scalar
+
+matrix = matrix * matrix
+matrix = matrix + matrix
+matrix = matrix - matrix
+
+# if angle is nil, vector[-1] is expected to be w
+matrix = Matrix.build_rotation(vector, angle=nil)
+
+# use scale if vector is a unit vector.
+matrix = Matrix.build_scale(vector, scale=1.0)
+matrix = Matrix.build_translate(vector, scale=1.0)
+
+matrix = matrix.rotate(vector, angle=nil)
+matrix = matrix.scale(vector, scale=1.0)
+matrix = matrix.translate(vector, scale=1.0)
+
+
+vector = Matrix.rotate(vector, axis, angle)
+# ...or! vector = vector.rotate(axis, angle)
+
+matrix = Matrix.build_identity(n)
+
+
+# Notes:
+
+# - should I generalize the dimensions, or concentrate on 3D (or 4D
+#   with homogenous w)? Should I generalize and then create a parallel
+#   inheritance tree? This is how I would do it in C++, e.g.:
+# 
+#   class Vector3D : public TVector<3>
+# 
+#   Should I do something similar in Ruby? Make generalized Vec/Mat
+#   modules, and then include/extend them into 2D/3D/4D special cases?
+#   And then create an N-value version? Answer: YAGNI/DTSTTCPW. I have
+#   no clue how I want to use this stuff yet. Trust in your ability to
+#   refactor tomorrow's evil code tomorrow.
+# 
+# - does scalar / vector exist? "3.0 per 30k North" seems odd...
+# 
+# - does matrix/matrix exist?
+# 
+# - I haven't listed any bang methods above, but they should exist
+#   wherever obvious. E.g. vector.rotate!(axis, angle),
+#   matrix.scale!(vector). vector.cross!(vector) might be a special
+#   case, since what I'm really implementing there is v.cross=(v),
+#   i.e. v1 x= v2
+# 
+# - MAN I wish Ruby could handle unicode, so I could say
+# 
+#   def ×(v)
+#     cross v
+#   end
+# 
+
+
